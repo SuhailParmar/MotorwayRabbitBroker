@@ -1,0 +1,1 @@
+# Folder which holds the configuration for Rabbit MQ
