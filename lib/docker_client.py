@@ -1,4 +1,8 @@
 import docker
+import logging
+from sys import exit
+from time import sleep
+docker_logger = logging.getLogger("DockerClient")
 
 
 class DockerClient:
@@ -8,14 +12,20 @@ class DockerClient:
         self.client = docker.client.from_env()
         self.running_container_ids = []
 
-    def create_rabbit_container(self):
-        rabbit_port = {'15672/tcp': 15672, '5672/tcp': 5672}
+    def create_rabbit_container(self, image, port, management_port):
+        rabbit_port = {'15672/tcp': management_port, '5672/tcp': port}
 
+        docker_logger.info("Creating Rabbit Mq...")
         has_created = self.client.containers.run(
-            "rabbitmq:3.7-management", name="mq",
-            ports=rabbit_port, detach=True)
+            image, name="mq", ports=rabbit_port, detach=True)
 
-        print(has_created.id)
+        if not has_created:
+            docker_logger.error("Couldn't create rabbit container")
+            exit(1)
+
+        docker_logger.debug(has_created.id)
+        sleep(10)  # TODO implement Wait for it
+        docker_logger.info("Rabbit Mq is Up!")
         return has_created
 
     def kill_rabbit_container(self):
@@ -28,11 +38,9 @@ class DockerClient:
                     return True
                 except Exception as e:
                     print(e)
-        return False
+        exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     d = DockerClient()
-    if d.create_rabbit_container():
-        print('Created Rabbit')
     d.kill_rabbit_container()
