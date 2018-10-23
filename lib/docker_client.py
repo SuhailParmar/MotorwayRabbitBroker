@@ -19,7 +19,7 @@ class DockerClient:
 
         try:
             has_created = self.client.containers.run(
-                image, name="mq", ports=rabbit_port, detach=True)
+                image, name="mq", ports=rabbit_port, detach=True, network="host")
         except docker.errors.APIError:
             docker_logger.error(
                 "Couldn't create rabbit container, stop/remove the existing one. ${docker rm $(docker ps -aq) }")
