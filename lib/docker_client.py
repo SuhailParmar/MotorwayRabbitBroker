@@ -29,7 +29,7 @@ class DockerClient:
             exit(1)
 
         docker_logger.debug(has_created.id)
-        sleep(10)  # TODO implement Wait for it
+        sleep(25)  # TODO implement Wait for it
         docker_logger.info("Rabbit Mq is Up!")
         return True
 
