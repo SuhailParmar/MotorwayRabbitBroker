@@ -19,7 +19,10 @@ class DockerClient:
 
         try:
             has_created = self.client.containers.run(
-                image, name="mq", ports=rabbit_port, detach=True, network="host")
+                image, ports=rabbit_port, detach=True, network="host")
+
+            docker_logger.info("Executed successfully.") if has_created else docker_logger.info('Nope')
+
         except docker.errors.APIError:
             docker_logger.error(
                 "Couldn't create rabbit container, stop/remove the existing one. ${docker rm $(docker ps -aq) }")
@@ -29,8 +32,8 @@ class DockerClient:
             exit(1)
 
         docker_logger.debug(has_created.id)
+        docker_logger.info("Rabbit Mq is Up! Waiting for port 15672 to be exposed...")
         sleep(25)  # TODO implement Wait for it
-        docker_logger.info("Rabbit Mq is Up!")
         return True
 
     def kill_rabbit_container(self):

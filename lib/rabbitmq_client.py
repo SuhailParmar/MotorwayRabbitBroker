@@ -91,7 +91,7 @@ class RabbitMQClient:
                               "{}".format(self.mport),
                               "{}".format(self.vhost)])
         if response_code != 0:
-            print("Failed to create vHost: {}".format(self.vhost))
+            mq_logger.error("Failed to create vHost: {}".format(self.vhost))
             exit(1)
 
         print("Successfully created vHost: {}".format(self.vhost))
